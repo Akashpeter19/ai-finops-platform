@@ -40,3 +40,25 @@ resource "aws_lambda_permission" "allow_eventbridge_anomaly" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.daily_anomaly.arn
 }
+
+# ── RCA Lambda — runs at 8:20am UTC daily ────────────────────
+# Runs 10 minutes after anomaly detector
+resource "aws_cloudwatch_event_rule" "daily_rca" {
+  name                = "${var.project_name}-daily-rca"
+  description         = "Triggers the RCA Lambda daily"
+  schedule_expression = "cron(20 8 * * ? *)"
+}
+
+resource "aws_cloudwatch_event_target" "rca_target" {
+  rule      = aws_cloudwatch_event_rule.daily_rca.name
+  target_id = "RCALambda"
+  arn       = aws_lambda_function.rca.arn
+}
+
+resource "aws_lambda_permission" "allow_eventbridge_rca" {
+  statement_id  = "AllowEventBridgeInvokeRCA"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.rca.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.daily_rca.arn
+}
