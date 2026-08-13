@@ -14,5 +14,5 @@ terraform {
 
 provider "aws" {
   region  = var.aws_region
-  profile = "finops"
+  profile = var.aws_profile
 }

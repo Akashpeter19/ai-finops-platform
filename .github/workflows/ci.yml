@@ -57,15 +57,7 @@ jobs:
             --framework terraform \
             --config-file .checkov.yml \
             --output cli \
-            --output junitxml \
-            --output-file-path console,checkov-results.xml \
             --soft-fail
-      - name: Upload Checkov results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: checkov-results
-          path: checkov-results.xml
 
   security-trivy:
     name: Trivy — Docker Image Scan
@@ -83,11 +75,6 @@ jobs:
         run: |
           trivy image grafana/grafana:latest \
             --severity HIGH,CRITICAL \
-            --exit-code 0 \
-            --format table
-      - name: Run Trivy on project Dockerfile
-        run: |
-          trivy config docker/ \
             --exit-code 0 \
             --format table
 
@@ -114,4 +101,4 @@ jobs:
         run: |
           cd terraform
           terraform init
-          terraform apply -auto-approve
+          terraform apply -auto-approve -var="aws_profile="

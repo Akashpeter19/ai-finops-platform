@@ -42,3 +42,4 @@ logs/
 # IDE
 .vscode/
 .idea/
+local.tfvars

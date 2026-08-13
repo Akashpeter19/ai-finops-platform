@@ -12,3 +12,8 @@ variable "environment" {
   description = "Environment name"
   default     = "dev"
 }
+
+variable "aws_profile" {
+  description = "AWS CLI profile — leave empty in CI, use finops locally"
+  default     = ""
+}
