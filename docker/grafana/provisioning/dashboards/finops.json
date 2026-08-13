@@ -1,0 +1,51 @@
+{
+  "title": "AI FinOps Platform",
+  "uid": "finops-main",
+  "timezone": "browser",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Daily AWS Spend",
+      "type": "barchart",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+      "datasource": "FinOps SQLite",
+      "targets": [
+        {
+          "rawQueryText": "SELECT date as Date, SUM(amount) as Total_Spend FROM cost_data GROUP BY date ORDER BY date",
+          "queryType": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Anomaly Events",
+      "type": "table",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "datasource": "FinOps SQLite",
+      "targets": [
+        {
+          "rawQueryText": "SELECT date, service, actual_cost, expected_cost, severity FROM anomaly_events ORDER BY created_at DESC",
+          "queryType": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Top Services by Cost",
+      "type": "bargauge",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "datasource": "FinOps SQLite",
+      "targets": [
+        {
+          "rawQueryText": "SELECT service, ROUND(SUM(amount), 2) as total_cost FROM cost_data GROUP BY service ORDER BY total_cost DESC LIMIT 10",
+          "queryType": "table",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "version": 1
+}
