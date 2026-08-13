@@ -62,3 +62,24 @@ resource "aws_lambda_permission" "allow_eventbridge_rca" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.daily_rca.arn
 }
+
+# ── Notifier Lambda — runs at 8:30am UTC daily ───────────────
+resource "aws_cloudwatch_event_rule" "daily_notifier" {
+  name                = "${var.project_name}-daily-notifier"
+  description         = "Triggers the notifier Lambda daily"
+  schedule_expression = "cron(30 8 * * ? *)"
+}
+
+resource "aws_cloudwatch_event_target" "notifier_target" {
+  rule      = aws_cloudwatch_event_rule.daily_notifier.name
+  target_id = "NotifierLambda"
+  arn       = aws_lambda_function.notifier.arn
+}
+
+resource "aws_lambda_permission" "allow_eventbridge_notifier" {
+  statement_id  = "AllowEventBridgeInvokeNotifier"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.notifier.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.daily_notifier.arn
+}
