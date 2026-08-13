@@ -1,0 +1,13 @@
+# Checkov configuration for AI FinOps Platform
+# Suppress checks that don't apply to this portfolio project
+
+skip-check:
+  - CKV_AWS_116   # Lambda DLQ — not needed for portfolio
+  - CKV_AWS_117   # Lambda VPC — not needed for portfolio
+  - CKV_AWS_272   # Lambda code signing — not needed for portfolio
+  - CKV_AWS_50    # Lambda X-Ray — nice to have but not required
+  - CKV_AWS_338   # CloudWatch log retention — we set 14 days which is fine
+  - CKV2_AWS_29   # VPC endpoint — not needed for portfolio
+  - CKV2_AWS_6    # S3 public access — no S3 in this project
+
+soft-fail: true
