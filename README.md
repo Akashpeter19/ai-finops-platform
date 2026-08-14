@@ -17,22 +17,25 @@ On-call engineers get context on a cost spike within minutes of it happening, in
 ## Architecture
 
 ![AI FinOps Platform architecture diagram](docs/architecture.png)
+
+```
 EventBridge (daily cron)
-│
-▼
-Lambda: collector.py → pulls Cost Explorer + CloudWatch data → SQLite
-│
-▼
-Lambda: anomaly.py → 7-day moving average + z-score detection
-│
-▼
-Lambda: rca.py → AWS Bedrock (Claude Haiku) generates root cause analysis
-│
-▼
-Lambda: notifier.py → Slack Block Kit alert with RCA summary
-│
-▼
-Grafana (Docker) → cost trend, anomaly count, top-services dashboards
+        │
+        ▼
+Lambda: collector.py  →  pulls Cost Explorer + CloudWatch data  →  SQLite
+        │
+        ▼
+Lambda: anomaly.py    →  7-day moving average + z-score detection
+        │
+        ▼
+Lambda: rca.py         →  AWS Bedrock (Claude Haiku) generates root cause analysis
+        │
+        ▼
+Lambda: notifier.py    →  Slack Block Kit alert with RCA summary
+        │
+        ▼
+Grafana (Docker)       →  cost trend, anomaly count, top-services dashboards
+```
 
 ## Tech Stack
 
@@ -52,19 +55,22 @@ Grafana (Docker) → cost trend, anomaly count, top-services dashboards
 | Testing | pytest + moto (27 tests) |
 
 ## Project Structure
+
+```
 ai-finops-platform/
 ├── lambda/
-│ ├── src/
-│ │ ├── collector.py # Cost Explorer ingestion
-│ │ ├── anomaly.py # Moving average + z-score detection
-│ │ ├── rca.py # Bedrock AI root cause analysis
-│ │ ├── notifier.py # Slack alert builder
-│ │ └── db.py # SQLite data layer
-│ └── tests/ # 27 unit tests with moto mocks
-├── terraform/ # Lambda, IAM, EventBridge, SSM
-├── docker/ # Grafana Docker Compose stack
-├── docs/ # Setup guide + architecture diagram
-└── .github/workflows/ # 6-job CI/CD pipeline
+│   ├── src/
+│   │   ├── collector.py   # Cost Explorer ingestion
+│   │   ├── anomaly.py     # Moving average + z-score detection
+│   │   ├── rca.py         # Bedrock AI root cause analysis
+│   │   ├── notifier.py    # Slack alert builder
+│   │   └── db.py          # SQLite data layer
+│   └── tests/              # 27 unit tests with moto mocks
+├── terraform/               # Lambda, IAM, EventBridge, SSM
+├── docker/                  # Grafana Docker Compose stack
+├── docs/                    # Setup guide + architecture diagram
+└── .github/workflows/       # 6-job CI/CD pipeline
+```
 
 ## Key Engineering Decisions
 
