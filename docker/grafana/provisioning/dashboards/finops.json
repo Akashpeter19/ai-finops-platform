@@ -1,51 +1,418 @@
 {
-  "title": "AI FinOps Platform",
-  "uid": "finops-main",
-  "timezone": "browser",
-  "panels": [
-    {
-      "id": 1,
-      "title": "Daily AWS Spend",
-      "type": "barchart",
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
-      "datasource": "FinOps SQLite",
-      "targets": [
-        {
-          "rawQueryText": "SELECT date as Date, SUM(amount) as Total_Spend FROM cost_data GROUP BY date ORDER BY date",
-          "queryType": "table",
-          "refId": "A"
-        }
-      ]
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "finops-main",
+    "namespace": "default",
+    "uid": "149848d5-470f-4693-91ee-e2386e16103a",
+    "resourceVersion": "1786688125919982",
+    "generation": 3,
+    "creationTimestamp": "2026-08-13T14:35:21Z",
+    "labels": {
+      "grafana.app/deprecatedInternalID": "2744259669446656"
     },
-    {
-      "id": 2,
-      "title": "Anomaly Events",
-      "type": "table",
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
-      "datasource": "FinOps SQLite",
-      "targets": [
-        {
-          "rawQueryText": "SELECT date, service, actual_cost, expected_cost, severity FROM anomaly_events ORDER BY created_at DESC",
-          "queryType": "table",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "title": "Top Services by Cost",
-      "type": "bargauge",
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
-      "datasource": "FinOps SQLite",
-      "targets": [
-        {
-          "rawQueryText": "SELECT service, ROUND(SUM(amount), 2) as total_cost FROM cost_data GROUP BY service ORDER BY total_cost DESC LIMIT 10",
-          "queryType": "table",
-          "refId": "A"
-        }
-      ]
+    "annotations": {
+      "grafana.app/createdBy": "access-policy:service",
+      "grafana.app/folder": "bfv2emzzhv6kgf",
+      "grafana.app/managedBy": "classic-file-provisioning",
+      "grafana.app/managerId": "FinOps Dashboards",
+      "grafana.app/sourceChecksum": "f32bd55bce878d54c8c338664373dac8",
+      "grafana.app/sourcePath": "/etc/grafana/provisioning/dashboards/finops.json",
+      "grafana.app/sourceTimestamp": "1786688120000",
+      "grafana.app/updatedBy": "access-policy:service",
+      "grafana.app/updatedTimestamp": "2026-08-14T06:15:25Z",
+      "grafana.app/folderTitle": "FinOps",
+      "grafana.app/folderUrl": "/dashboards/f/bfv2emzzhv6kgf/finops"
     }
-  ],
-  "schemaVersion": 38,
-  "version": 1
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "builtIn": true,
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "query": {
+            "datasource": {
+              "name": "-- Grafana --"
+            },
+            "group": "grafana",
+            "kind": "DataQuery",
+            "spec": {},
+            "version": "v0"
+          }
+        }
+      }
+    ],
+    "cursorSync": "Off",
+    "editable": true,
+    "elements": {
+      "panel-1": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "P65B4412DEBF27FA5"
+                      },
+                      "group": "frser-sqlite-datasource",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "queryText": "SELECT date as Date, SUM(amount) as Total_Spend FROM cost_data GROUP BY date ORDER BY date",
+                        "queryType": "table",
+                        "rawQueryText": "SELECT date as Date, SUM(amount) as Total_Spend FROM cost_data GROUP BY date ORDER BY date",
+                        "timeColumns": [
+                          "time",
+                          "ts"
+                        ]
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "",
+          "id": 1,
+          "links": [],
+          "title": "Daily AWS Spend",
+          "vizConfig": {
+            "group": "barchart",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "fixedColor": "#ad46ff",
+                    "mode": "fixed"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "fillOpacity": 100,
+                    "gradientMode": "hue",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineWidth": 1,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "barRadius": 0,
+                "barWidth": 0.9,
+                "fullHighlight": false,
+                "groupWidth": 0.8,
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "orientation": "auto",
+                "showValue": "auto",
+                "stacking": "none",
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                },
+                "xField": "time",
+                "xTickLabelRotation": 0,
+                "xTickLabelSpacing": -100
+              }
+            },
+            "version": "13.1.3"
+          }
+        }
+      },
+      "panel-2": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "P65B4412DEBF27FA5"
+                      },
+                      "group": "frser-sqlite-datasource",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "queryType": "table",
+                        "rawQueryText": "SELECT date, service, actual_cost, expected_cost, severity FROM anomaly_events ORDER BY created_at DESC"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "",
+          "id": 2,
+          "links": [],
+          "title": "Anomaly Events",
+          "vizConfig": {
+            "group": "table",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "cellHeight": "sm",
+                "showHeader": true
+              }
+            },
+            "version": "13.1.3"
+          }
+        }
+      },
+      "panel-3": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "P65B4412DEBF27FA5"
+                      },
+                      "group": "frser-sqlite-datasource",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "queryText": "SELECT service, ROUND(SUM(amount), 2) as total_cost FROM cost_data GROUP BY service ORDER BY total_cost DESC LIMIT 10",
+                        "queryType": "table",
+                        "rawQueryText": "SELECT service, ROUND(SUM(amount), 2) as total_cost FROM cost_data GROUP BY service ORDER BY total_cost DESC LIMIT 10",
+                        "timeColumns": [
+                          "time",
+                          "ts"
+                        ]
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "",
+          "id": 3,
+          "links": [],
+          "title": "Top Services by Cost",
+          "vizConfig": {
+            "group": "bargauge",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-GrYlRd"
+                  },
+                  "thresholds": {
+                    "mode": "percentage",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "orange",
+                        "value": 60
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "options": {
+                "displayMode": "lcd",
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": false
+                },
+                "maxVizHeight": 300,
+                "minVizHeight": 16,
+                "minVizWidth": 8,
+                "namePlacement": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showUnfilled": true,
+                "sizing": "auto",
+                "valueMode": "text"
+              }
+            },
+            "version": "13.1.3"
+          }
+        }
+      }
+    },
+    "layout": {
+      "kind": "GridLayout",
+      "spec": {
+        "items": [
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-1"
+              },
+              "height": 8,
+              "width": 24,
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-2"
+              },
+              "height": 8,
+              "width": 12,
+              "x": 0,
+              "y": 8
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-3"
+              },
+              "height": 8,
+              "width": 12,
+              "x": 12,
+              "y": 8
+            }
+          }
+        ]
+      }
+    },
+    "links": [],
+    "liveNow": false,
+    "preload": false,
+    "tags": [],
+    "timeSettings": {
+      "autoRefresh": "",
+      "autoRefreshIntervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "fiscalYearStartMonth": 0,
+      "from": "now-6h",
+      "hideTimepicker": false,
+      "timezone": "browser",
+      "to": "now"
+    },
+    "title": "AI FinOps Platform",
+    "variables": []
+  }
 }
