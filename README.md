@@ -1,98 +1,123 @@
-# Brain-Tasks-App
+# AI FinOps Platform
 
-## Overview
+> AI-powered AWS cost anomaly detection and automated remediation system, built with production-grade DevOps practices.
 
-This repository contains the Brain-Tasks-App deployment project completed using an AWS DevOps CI/CD workflow.
+![CI Pipeline](https://github.com/Akashpeter19/ai-finops-platform/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Terraform](https://img.shields.io/badge/Terraform-1.7-purple)
+![AWS](https://img.shields.io/badge/AWS-Lambda%20%7C%20Bedrock%20%7C%20CloudWatch-orange)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
-The application was deployed using:
+## What it does
 
-- GitHub  
-- AWS CodePipeline  
-- AWS CodeBuild  
-- Docker  
-- Amazon ECR  
-- Amazon EKS
+Automatically detects unusual AWS spending patterns using statistical anomaly detection, generates AI-powered root cause analysis using AWS Bedrock (Claude), sends actionable Slack alerts, and visualizes cost trends in Grafana — all running serverlessly on AWS Lambda.
 
-## Repository Contents
+On-call engineers get context on a cost spike within minutes of it happening, instead of finding out when the monthly bill arrives.
 
-- `Dockerfile` \- Packages the application using `nginx:alpine`  
-- `buildspec.yml` \- Build instructions used by AWS CodeBuild  
-- `deployment.yaml` \- Kubernetes deployment manifest  
-- `service.yaml` \- Kubernetes service manifest  
-- `screenshots/` \- Submission screenshots showing each stage of the project  
-- `README.md` \- Project summary and setup explanation
+## Architecture
 
-## CI/CD Pipeline Flow
+![AI FinOps Platform architecture diagram](docs/architecture.png)
+EventBridge (daily cron)
+│
+▼
+Lambda: collector.py → pulls Cost Explorer + CloudWatch data → SQLite
+│
+▼
+Lambda: anomaly.py → 7-day moving average + z-score detection
+│
+▼
+Lambda: rca.py → AWS Bedrock (Claude Haiku) generates root cause analysis
+│
+▼
+Lambda: notifier.py → Slack Block Kit alert with RCA summary
+│
+▼
+Grafana (Docker) → cost trend, anomaly count, top-services dashboards
 
-1. Source stage pulls code from the GitHub `main` branch.  
-2. Build stage uses AWS CodeBuild to:  
-   - authenticate with DockerHub and Amazon ECR  
-   - build the Docker image  
-   - tag the image  
-   - push the image to Amazon ECR  
-3. Deploy stage applies the Kubernetes deployment and service configuration to Amazon EKS.
+## Tech Stack
 
-## Docker Setup
+| Layer | Tool |
+|---|---|
+| Infrastructure | Terraform |
+| Compute | AWS Lambda (Python 3.11) |
+| Scheduling | AWS EventBridge |
+| Data | AWS Cost Explorer + CloudWatch |
+| AI | AWS Bedrock (Claude Haiku) |
+| Alerts | Slack Incoming Webhooks |
+| Dashboards | Grafana + SQLite datasource |
+| CI/CD | GitHub Actions (lint, test, security scan, deploy) |
+| Security | Checkov (Terraform) + Trivy (Docker) |
+| Secrets | AWS SSM Parameter Store |
+| Storage | SQLite |
+| Testing | pytest + moto (27 tests) |
 
-The application uses the following Docker approach:
+## Project Structure
+ai-finops-platform/
+├── lambda/
+│ ├── src/
+│ │ ├── collector.py # Cost Explorer ingestion
+│ │ ├── anomaly.py # Moving average + z-score detection
+│ │ ├── rca.py # Bedrock AI root cause analysis
+│ │ ├── notifier.py # Slack alert builder
+│ │ └── db.py # SQLite data layer
+│ └── tests/ # 27 unit tests with moto mocks
+├── terraform/ # Lambda, IAM, EventBridge, SSM
+├── docker/ # Grafana Docker Compose stack
+├── docs/ # Setup guide + architecture diagram
+└── .github/workflows/ # 6-job CI/CD pipeline
 
-- Base image: `nginx:alpine`  
-- Static build folder copied into `/usr/share/nginx/html`  
-- Container exposed on port `80`
+## Key Engineering Decisions
 
-## AWS Resources Used
+**Why Terraform over CloudFormation?**
+Terraform is cloud-agnostic and widely adopted across companies, and reusable across future projects.
 
-- **AWS Region:** `ap-south-1`  
-- **ECR Repository:** `brain-tasks-app`  
-- **EKS Cluster:** `eks-brain-tasks-cluster`  
-- **Pipeline Name:** `brain-tasks-pipeline`  
-- **Build Project:** `brain-tasks-build`
+**Why Lambda over EC2?**
+Serverless fits the daily scheduling pattern perfectly — zero idle cost, only runs for ~2 seconds a day.
 
-## Kubernetes Setup
+**Why SQLite over RDS/DynamoDB?**
+Keeps the project cost near zero while demonstrating the same data-modeling skills. Explicitly documented as a v1 trade-off.
 
-- Deployment name: `brain-tasks-deployment`  
-- Replicas: `2`  
-- Service name: `brain-tasks-service`  
-- Service type: `LoadBalancer`
+**Why a simple moving average over ML?**
+Engineering judgment: ship a baseline that's explainable, cheap, and fast. ML is documented as a v2 enhancement.
 
-## Setup / Verification Steps
+**Why Bedrock over OpenAI?**
+Keeps the architecture AWS-native with IAM-based access control — a better fit for AWS-focused roles.
 
-### Build and push image
+## Results
 
-The image is built and pushed automatically through CodeBuild using `buildspec.yml`.
+- Detects cost spikes with z-score > 2.0 standard deviations above the 7-day baseline
+- Generates AI root cause analysis and remediation steps in under 3 seconds
+- Sends formatted Slack alerts with anomaly context and AI recommendations
+- 27 unit tests passing with moto AWS mocks — zero real AWS calls in tests
+- Full CI/CD pipeline: lint → test → security scan → terraform validate → deploy
 
-### Deploy to EKS
+## Business Impact
 
-The Kubernetes resources are applied using:
+This system addresses a real problem: AWS cost overruns that go undetected for days. By combining statistical anomaly detection with AI-powered root cause analysis and instant Slack alerts, on-call engineers get actionable information within minutes of a cost spike — not after the monthly bill arrives.
 
-kubectl apply \-f deployment.yaml
+## Setup
 
-kubectl apply \-f service.yaml
+See [docs/setup.md](docs/setup.md) for full setup instructions.
 
-### Verify deployment
+**Quick start:**
+```bash
+git clone https://github.com/Akashpeter19/ai-finops-platform
+cd ai-finops-platform/terraform
+terraform init && terraform apply
+```
 
-kubectl get pods
+## Project Status
 
-kubectl get svc
+- [x] Phase 0 — Repo, Terraform, IAM, Docker, CI skeleton
+- [x] Phase 1 — Data collection (Cost Explorer + CloudWatch)
+- [x] Phase 2 — Anomaly detection (moving average + z-score)
+- [x] Phase 3 — AI root cause analysis (AWS Bedrock)
+- [x] Phase 4 — Slack alerts + CI/CD auto-deploy pipeline
+- [x] Phase 5 — Grafana dashboards (Docker + SQLite)
+- [x] Phase 6 — Security scanning (Checkov + Trivy)
+- [x] Phase 7 — Documentation + resume polish
 
-## Submission Proof
+## Author
 
-The `screenshots/` folder contains ordered screenshots for:
-
-- GitHub repository  
-- Dockerfile and buildspec  
-- Amazon ECR repository  
-- CodeBuild success  
-- CodePipeline overview and execution  
-- EKS deployment proof  
-- Application running in browser  
-- Logs and pipeline trigger test
-
-## Application Access
-
-- **LoadBalancer URL:** http://a619664b33fd64b77a3ea38344c669a3-1958726347.ap-south-1.elb.amazonaws.com/  
-- **LoadBalancer ARN:** arn:aws:eks:ap-south-1:145713875816:cluster/eks-brain-tasks-cluster
-
-## Project Outcome
-
-This project successfully demonstrates a complete CI/CD workflow from GitHub to AWS EKS using Docker, Amazon ECR, AWS CodeBuild, and AWS CodePipeline.  
+**Akash Peter Prakash** — Aspiring AWS DevOps Engineer
+[LinkedIn](https://linkedin.com/in/akashpeter19) · [GitHub](https://github.com/Akashpeter19) · [Portfolio](https://akashpeter.netlify.app)
